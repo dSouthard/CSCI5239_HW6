@@ -30,10 +30,10 @@ You may also want to explore the Qt for Android or Qt for iPhone approach.  If y
 
 
 #### Android Application Description
-This app shows a cube rotating on its axis with colored faces against a black background with a light point rotating about the cube. The app utilizes per-fragment lighting in its shaders. Based on Lesson 3 from [LearnOpenGLES](http://www.learnopengles.com/android-lesson-three-moving-to-per-fragment-lighting/) with touch sensing from the [Android Tutorials](http://developer.android.com/training/graphics/opengl/projection.html)
+This app shows 5 cubes with colored faces against a gray background with a light point rotating about the cube. The cubes will rotate based on touch input from the user. The app utilizes per-fragment lighting in its shaders. Based on Lesson 3 from [LearnOpenGLES](http://www.learnopengles.com/android-lesson-three-moving-to-per-fragment-lighting/) with touch sensing from the [Android Tutorials](http://developer.android.com/training/graphics/opengl/projection.html)
 
 #### Program Use Instructions
-- Compiled on AndroidStudio running on Ubuntu
+- Compiled on AndroidStudio running on Ubuntu. Tested on an HTC One M8 running Android 5.0.1 Lollipop
 - Import project to AndroidStudio and run either on emulator or device
 
 
