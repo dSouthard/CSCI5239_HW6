@@ -67,7 +67,7 @@ public class Cube {
     // R, G, B, A
     static public float[] cubeColorData =
             {
-                    // Front face (red)
+//                     Front face (red)
                     1.0f, 0.0f, 0.0f, 1.0f,
                     1.0f, 0.0f, 0.0f, 1.0f,
                     1.0f, 0.0f, 0.0f, 1.0f,

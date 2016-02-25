@@ -96,6 +96,19 @@ public class HW6Renderer implements GLSurfaceView.Renderer
 	/** This is a handle to our light point program. */
 	private int mPointProgramHandle;
 
+	//  Respond to Touch Events
+	public volatile float mAngle;
+
+	public float getAngle() {
+		return mAngle;
+	}
+
+	public void setAngle(float angle) {
+		mAngle = angle;
+	}
+
+	private float[] mRotationMatrix = new float[16];
+
 	/**
 	 * Initialize the model data.
 	 */
@@ -119,7 +132,7 @@ public class HW6Renderer implements GLSurfaceView.Renderer
 	public void onSurfaceCreated(GL10 glUnused, EGLConfig config)
 	{
 		// Set the background clear color to black.
-		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		GLES20.glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 
 		// Use culling to remove back faces.
 //		GLES20.glEnable(GLES20.GL_CULL_FACE);
@@ -188,6 +201,19 @@ public class HW6Renderer implements GLSurfaceView.Renderer
 		long time = SystemClock.uptimeMillis() % 10000L;
 		float angleInDegrees = (360.0f / 10000.0f) * ((int) time);
 
+		// Calculate position of the light. Rotate and then push into the distance.
+		Matrix.setIdentityM(mLightModelMatrix, 0);
+		Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, -5.0f);
+		Matrix.rotateM(mLightModelMatrix, 0, angleInDegrees * 2, 0.0f, 1.0f, 0.0f);
+		Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
+
+		Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
+		Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);
+
+		// Draw a point to indicate the light.
+		GLES20.glUseProgram(mPointProgramHandle);
+		drawLight();
+
 		// Set our per-vertex lighting program.
 		GLES20.glUseProgram(mPerVertexProgramHandle);
 
@@ -199,23 +225,45 @@ public class HW6Renderer implements GLSurfaceView.Renderer
 		mColorHandle = GLES20.glGetAttribLocation(mPerVertexProgramHandle, "a_Color");
 		mNormalHandle = GLES20.glGetAttribLocation(mPerVertexProgramHandle, "a_Normal");
 
-		// Calculate position of the light. Rotate and then push into the distance.
-		Matrix.setIdentityM(mLightModelMatrix, 0);
-		Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, -5.0f);
-		Matrix.rotateM(mLightModelMatrix, 0, angleInDegrees*2, 0.0f, 1.0f, 0.0f);
-		Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
+//		// Rotate per touch events
+//		float[] scratch = new float[16];
+//		Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 0, -1.0f);
 
-		Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
-		Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);
+		// Combine the rotation matrix with the projection and camera view
+		// Note that the mMVPMatrix factor *must be first* in order
+		// for the matrix multiplication product to be correct.
+//		Matrix.multiplyMM(mMVPMatrix, 0, mMVPMatrix, 0, mRotationMatrix, 0);
+
+//		Matrix.setIdentityM(mModelMatrix, 0);
+//		Matrix.translateM(mModelMatrix, 0, 0.0f, 0.0f, -7.0f);
+//		Matrix.rotateM(mModelMatrix, 0, mAngle, 1.0f, 1.0f, 0.0f);
+//		drawCube();
+
+		// Draw some cubes.
+		Matrix.setIdentityM(mModelMatrix, 0);
+		Matrix.translateM(mModelMatrix, 0, 4.0f, 0.0f, -7.0f);
+		Matrix.rotateM(mModelMatrix, 0, mAngle, 1.0f, 0.0f, 0.0f);
+		drawCube();
+
+		Matrix.setIdentityM(mModelMatrix, 0);
+		Matrix.translateM(mModelMatrix, 0, -4.0f, 0.0f, -7.0f);
+		Matrix.rotateM(mModelMatrix, 0, mAngle, 0.0f, 1.0f, 0.0f);
+		drawCube();
+
+		Matrix.setIdentityM(mModelMatrix, 0);
+		Matrix.translateM(mModelMatrix, 0, 0.0f, 4.0f, -7.0f);
+		Matrix.rotateM(mModelMatrix, 0, mAngle, 0.0f, 0.0f, 1.0f);
+		drawCube();
+
+		Matrix.setIdentityM(mModelMatrix, 0);
+		Matrix.translateM(mModelMatrix, 0, 0.0f, -4.0f, -7.0f);
+		Matrix.rotateM(mModelMatrix, 0, mAngle, 0.0f, 0.0f, 1.0f);
+		drawCube();
 
 		Matrix.setIdentityM(mModelMatrix, 0);
 		Matrix.translateM(mModelMatrix, 0, 0.0f, 0.0f, -5.0f);
-		Matrix.rotateM(mModelMatrix, 0, angleInDegrees, 1.0f, 1.0f, 0.0f);
+		Matrix.rotateM(mModelMatrix, 0, mAngle, 1.0f, 1.0f, 0.0f);
 		drawCube();
-
-		// Draw a point to indicate the light.
-		GLES20.glUseProgram(mPointProgramHandle);
-		drawLight();
 
 	}
 
